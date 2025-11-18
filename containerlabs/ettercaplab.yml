@@ -1,18 +1,65 @@
-name: kali-lab
+name: minimal-lab
+
 topology:
   nodes:
+    switch1:
+      kind: linux
+      image: ubuntu:22.04
+      cmd: >
+        bash -c "
+        apt-get update && apt-get install -y openvswitch-switch &&
+        ovs-vsctl add-br br0 &&
+        ovs-vsctl add-port br0 eth1 &&
+        ovs-vsctl add-port br0 eth2 &&
+        ovs-vsctl add-port br0 eth3 &&
+        ip link set br0 up &&
+        tail -f /dev/null
+        "
+
+    dhcp-server:
+      kind: linux
+      image: ubuntu:22.04
+      cmd: >
+        bash -c "apt update && apt install -y isc-dhcp-server &&
+        echo 'INTERFACESv4=\"eth1\"' > /etc/default/isc-dhcp-server &&
+        echo 'subnet 10.10.0.0 netmask 255.255.255.0 {
+                range 10.10.0.10 10.10.0.100;
+                option routers 10.10.0.1;
+                option domain-name-servers 8.8.8.8;
+              }' > /etc/dhcp/dhcpd.conf &&
+        ip addr add 10.10.0.1/24 dev eth1 &&
+        service isc-dhcp-server restart &&
+        tail -f /dev/null"
+
+    ubuntu1:
+      kind: linux
+      image: ubuntu:22.04
+      cmd: "tail -f /dev/null"
+
     kali1:
       kind: linux
-      image: ghcr.io/wsu-csg/containerlabkali:latest
-      env:
-        SUBFOLDER: "/kali1/"
-
-    kali2:
-      kind: linux
-      image: ghcr.io/wsu-csg/containerlabkali:latest
-      env:
-        SUBFOLDER: "/kali2/"
-
+      image: kalilinux/kali-rolling:latest
+      cmd: >
+        bash -c "
+        # Update and install tools (non-interactive)
+        export DEBIAN_FRONTEND=noninteractive
+        apt update && apt install -y \
+          ettercap-text-only \
+          nmap \
+          net-tools \
+          iputils-ping \
+          tcpdump \
+          wireshark-qt \
+          ssh \
+          bash
+        
+        echo 'Kali CLI ready with ettercap, nmap, wireshark, and networking tools'
+        echo 'Access with: sudo docker exec -it clab-minimal-lab-kali1 bash'
+        echo 'Run ettercap: sudo ettercap -T -i eth1 -M arp'
+        tail -f /dev/null
+        "
 
   links:
-    - endpoints: ["kali1:eth1", "kali2:eth1"]
+    - endpoints: ["switch1:eth1", "dhcp-server:eth1"]
+    - endpoints: ["switch1:eth2", "kali1:eth1"]
+    - endpoints: ["switch1:eth3", "ubuntu1:eth1"]
