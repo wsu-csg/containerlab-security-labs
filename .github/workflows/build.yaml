@@ -31,7 +31,7 @@ jobs:
               password: ${{secrets.GITHUB_TOKEN}}
 
           - name: 'Build Inventory Image'
-            run: "docker build dockerCustomImages/kaliDockerDesktop --tag ghcr.io/wsu-csg/containerLabKALI:latest"
+            run: "docker build dockerCustomImages/kaliDockerDesktop --tag ghcr.io/wsu-csg/containerLabkali:latest"
 
           - name: 'push'
-            run: "docker push ghcr.io/wsu-csg/containerLabKALI:latest"
+            run: "docker push ghcr.io/wsu-csg/containerLabkali:latest"
