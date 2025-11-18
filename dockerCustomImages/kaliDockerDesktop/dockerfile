@@ -16,5 +16,7 @@ RUN apt install net-tools -y
 RUN apt install wireshark -y
 RUN apt install ettercap-graphical -y
 RUN apt install nmap -y
+RUN apt install iputils-ping -y
 
 
+#docker run --rm -p 3000:3000 --name mycontainer csgcontainerkali
