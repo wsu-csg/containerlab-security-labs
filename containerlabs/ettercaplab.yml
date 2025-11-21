@@ -38,7 +38,7 @@ topology:
 
     kali1:
       kind: linux
-      image: kalilinux/kali-rolling:latest
+      image: ghcr.io/wsu-csg/containerlabkali:latest
       ports:
         - "3390:3390"
         - "3350:3350"
