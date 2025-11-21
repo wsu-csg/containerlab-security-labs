@@ -39,25 +39,10 @@ topology:
     kali1:
       kind: linux
       image: kalilinux/kali-rolling:latest
-      cmd: >
-        bash -c "
-        # Update and install tools (non-interactive)
-        export DEBIAN_FRONTEND=noninteractive
-        apt update && apt install -y \
-          ettercap-text-only \
-          nmap \
-          net-tools \
-          iputils-ping \
-          tcpdump \
-          wireshark-qt \
-          ssh \
-          bash
-        
-        echo 'Kali CLI ready with ettercap, nmap, wireshark, and networking tools'
-        echo 'Access with: sudo docker exec -it clab-minimal-lab-kali1 bash'
-        echo 'Run ettercap: sudo ettercap -T -i eth1 -M arp'
-        tail -f /dev/null
-        "
+      ports:
+        - "3390:3390"
+        - "3350:3350"
+
 
   links:
     - endpoints: ["switch1:eth1", "dhcp-server:eth1"]

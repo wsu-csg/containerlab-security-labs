@@ -1,26 +1,93 @@
 FROM kalilinux/kali-rolling:latest
 
-# Install all packages in one RUN to reduce layers
-RUN apt update && apt install -y \
-    net-tools \
-    wireshark \
-    ettercap-text-only \
-    nmap \
-    iputils-ping \
-    openssh-server \
-    xvfb \
-    x11vnc \
-    novnc \
-    websockify \
-    firefox-esr \
-    xfce4 \
+# install desktop
+RUN apt-get update && apt-get install -y
+
+#basic bootstrapping necessities
+RUN apt install -y \
+    sudo \
+    passwd \
+    supervisor \
+    sudo 
+
+#install a desktop
+RUN apt-get update && apt-get install -y \
+    xfce4-session \
+    xfce4-panel \
     xfce4-terminal \
-    tigervnc-common \
-    tigervnc-standalone-server \
-    && apt clean \
-    && rm -rf /var/lib/apt/lists/*
+    xfwm4 \
+    xfce4-appfinder \
+    xfce4-settings \
+    thunar \
+    dbus-x11 \
+    x11-xserver-utils
 
-# Set up VNC directory
-RUN mkdir -p /root/.vnc
 
-EXPOSE 3000 5901 6080 22
+# Install xRDP
+RUN apt-get update && apt-get install -y \
+    xrdp \
+    && apt-get clean
+
+#basic utilities 
+RUN apt install -y \
+    net-tools \
+    iputils-ping \
+    nano \
+    wireshark \
+    tshark \
+    ettercap-common \
+    ettercap-text-only \
+    tcpdump \
+    dsniff  \
+    bettercap \
+    responder \
+    mitmproxy \
+    netcat-traditional \
+    socat \
+    nmap \
+    arp-scan \
+    iproute2 \
+    nikto \
+    sqlmap \
+    hydra \
+    john \
+    hashcat \
+    wordlists \
+    scapy \
+    hping3 
+
+RUN apt-get clean
+
+# Add 'labuser' with root privileges
+RUN useradd -m -s /bin/bash labuser 
+
+RUN echo "labuser:1234" | chpasswd && \
+    usermod -aG sudo labuser
+
+# Create .xsession for labuser with dynamic resolution and XFCE startup
+RUN printf '#!/bin/bash\n\
+xrandr --fb 1920x1080 --output RDP0 --mode 1920x1080 --scale 1x1\n\
+startxfce4\n' \
+    > /home/labuser/.xsession && \
+    chown labuser:labuser /home/labuser/.xsession && \
+    chmod +x /home/labuser/.xsession
+
+
+
+# Configure xRDP to use the correct session for labuser
+RUN sed -i 's/3389/3390/' /etc/xrdp/xrdp.ini
+
+RUN sed -i 's|^\s*#\s*enable_dynamic_resizing=.*|enable_dynamic_resizing=true|' /etc/xrdp/xrdp.ini
+
+
+# Configure supervisor to keep xRDP running in the foreground
+COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
+
+USER root
+
+# Expose the RDP port
+EXPOSE 3390
+EXPOSE 3350
+
+# Start the supervisor and xRDP
+ENTRYPOINT ["/usr/bin/supervisord", "-n"]
