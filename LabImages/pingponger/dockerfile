@@ -1,0 +1,15 @@
+FROM debian:bookworm-slim
+
+ENV DEBIAN_FRONTEND=noninteractive
+ENV TARGET="127.0.0.1"
+ENV MESSAGE="ping"
+
+RUN apt-get update && apt-get install -y \
+    hping3 \
+    && rm -rf /var/lib/apt/lists/*
+
+COPY send.sh /send.sh
+COPY start.sh /start.sh
+RUN chmod +x /send.sh /start.sh
+
+CMD ["/start.sh"]
