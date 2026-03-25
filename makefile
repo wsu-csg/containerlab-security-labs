@@ -1,4 +1,4 @@
-.PHONY: deploy destroy build
+.PHONY: buildImages removeImages pruneImages
 
 buildImages:
 	@for dir in LabImages/*/; do \
@@ -17,9 +17,3 @@ removeImages:
 pruneImages:
 	docker image prune -f
 	docker builder prune -f
-
-deploy: build
-	clab deploy -t clab.yml
-
-destroy:
-	clab destroy -t clab.yml

@@ -1,8 +1,6 @@
 name: my-first-lab
-
 mgmt:
   external-access: false
-
 topology:
   nodes:
     srl1:
@@ -10,35 +8,41 @@ topology:
       image: ghcr.io/nokia/srlinux:24.10
       network-mode: none
       startup-config: srl1.json
-
     srl2:
       kind: nokia_srlinux
-
       image: ghcr.io/nokia/srlinux:24.10
       network-mode: none
       startup-config: srl2.json
-
     kali:
       kind: linux
       image: csgclab-bgpkali:latest
       network-mode: bridge
-
-    pingerone:      
+    pingerone:
       kind: linux
       image: csgclab-pingponger:latest
       network-mode: none
-
     pingertwo:
       kind: linux
       image: csgclab-pingponger:latest
       network-mode: none
+    sw1:
+      kind: linux
+      image: csgclab-simpleswitch:latest
+      network-mode: none
+    sw2:
+      kind: linux
+      image: csgclab-simpleswitch:latest
+      network-mode: none
 
   links:
-      #bgp Triangle
+    # bgp Triangle
     - endpoints: ["srl1:e1-1", "srl2:e1-1"]
     - endpoints: ["srl1:e1-2", "kali:eth1"]
     - endpoints: ["srl2:e1-2", "kali:eth2"]
-    
-      #ping pongers
-    - endpoints: ["pingerone:eth1", "srl1:e1-3"]
-    - endpoints: ["pingertwo:eth1", "srl2:e1-3"]
+
+    # pingerone through sw1
+    - endpoints: ["pingerone:eth1", "sw1:eth1"]
+    - endpoints: ["sw1:eth2", "srl1:e1-3"]
+    # pingertwo through sw2
+    - endpoints: ["pingertwo:eth1", "sw2:eth1"]
+    - endpoints: ["sw2:eth2", "srl2:e1-3"]

@@ -1,0 +1,63 @@
+{
+  "freeTextAnnotations": [],
+  "freeShapeAnnotations": [],
+  "trafficRateAnnotations": [],
+  "groupStyleAnnotations": [],
+  "networkNodeAnnotations": [],
+  "nodeAnnotations": [
+    {
+      "id": "srl1",
+      "interfacePattern": "e1-{n}",
+      "position": {
+        "x": 300,
+        "y": 320
+      }
+    },
+    {
+      "id": "srl2",
+      "interfacePattern": "e1-{n}",
+      "position": {
+        "x": 460,
+        "y": 360
+      }
+    },
+    {
+      "id": "kali",
+      "position": {
+        "x": 360,
+        "y": 460
+      }
+    },
+    {
+      "id": "pingerone",
+      "position": {
+        "x": 400,
+        "y": 260
+      }
+    },
+    {
+      "id": "pingertwo",
+      "position": {
+        "x": 700,
+        "y": 540
+      }
+    },
+    {
+      "id": "sw1",
+      "position": {
+        "x": 320,
+        "y": 140
+      }
+    },
+    {
+      "id": "sw2",
+      "position": {
+        "x": 640,
+        "y": 380
+      }
+    }
+  ],
+  "edgeAnnotations": [],
+  "aliasEndpointAnnotations": [],
+  "viewerSettings": {}
+}
